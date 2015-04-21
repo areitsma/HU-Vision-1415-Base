@@ -22,6 +22,7 @@ public:
 
 	RGB getPixel(int x, int y) const;
 	RGB getPixel(int i) const;
+	void setAllPixels(RGB* pS);
 private:
-	RGB *pixel_storage;
+	RGB *pixelStorage;
 };
