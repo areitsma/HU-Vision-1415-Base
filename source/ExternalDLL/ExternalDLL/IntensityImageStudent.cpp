@@ -8,19 +8,20 @@ IntensityImageStudent::IntensityImageStudent() : IntensityImage() {
 IntensityImageStudent::IntensityImageStudent(const IntensityImageStudent &other) : IntensityImage(other.getWidth(), other.getHeight()) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Create a copy from the other object
-	IntensityImageStudent cpy = other;
+	IntensityImageStudent(other.getWidth(), other.getHeight());
+	/*IntensityImageStudent cpy = other;
 	delete[] pixel_storage; 
 	for (int i = 0; i < cpy.getHeight()*cpy.getWidth(); i++){
 		Intensity intensity_pix = cpy.getPixel(i);
 		pixel_storage[i] = intensity_pix;
-	}
+	}*/
 }
 
 IntensityImageStudent::IntensityImageStudent(const int width, const int height) : IntensityImage(width, height) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Initialize pixel storage
-	delete[] pixel_storage;
-	Intensity * pixel_storage = new Intensity[width * height];
+	//delete[] pixel_storage;
+	pixel_storage = new Intensity[width * height];
 
 }
 
@@ -34,15 +35,15 @@ void IntensityImageStudent::set(const int width, const int height) {
 	IntensityImage::set(width, height);
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: resize or create a new pixel storage (Don't forget to delete the old storage)
-	delete[] pixel_storage;
-	Intensity * pixel_storage = new Intensity[width * height];
+	//delete[] pixel_storage;
+	pixel_storage = new Intensity[width * height];
 }
 
 void IntensityImageStudent::set(const IntensityImageStudent &other) {
 	IntensityImage::set(other.getWidth(), other.getHeight());
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: resize or create a new pixel storage and copy the object (Don't forget to delete the old storage)
-	delete[] pixel_storage;
+	//delete[] pixel_storage;
 	IntensityImageStudent cpy = other;
 	for (int i = 0; i < cpy.getHeight()*cpy.getWidth(); i++){
 		Intensity intensity_pix = cpy.getPixel(i);
@@ -55,7 +56,7 @@ void IntensityImageStudent::setPixel(int x, int y, Intensity pixel) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: no comment needed :)
 	int i = x + (y * this->getWidth());
-	pixel_storage[i] = pixel;
+	setPixel(i, pixel);
 }
 
 void IntensityImageStudent::setPixel(int i, Intensity pixel) {
