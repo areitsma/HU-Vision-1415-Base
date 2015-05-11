@@ -1,7 +1,10 @@
 #include "StudentPreProcessing.h"
 #include "IntensityImageStudent.h"
 #include <algorithm>
+#include <iostream>
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
+
+	std::cout << "Step to Intensity image " << std::endl;
 	IntensityImageStudent * IntImage = new IntensityImageStudent{ image.getWidth(), image.getHeight() };
 	for (int i = 0; i < image.getHeight()* image.getWidth(); i++){
 			RGB rgbPix = image.getPixel(i); 

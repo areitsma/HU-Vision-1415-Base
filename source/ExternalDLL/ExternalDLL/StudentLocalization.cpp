@@ -1,4 +1,6 @@
 #include "StudentLocalization.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 bool StudentLocalization::stepFindHead(const IntensityImage &image, FeatureMap &features) const {
 	return false;
@@ -9,9 +11,75 @@ bool StudentLocalization::stepFindNoseMouthAndChin(const IntensityImage &image, 
 }
 
 bool StudentLocalization::stepFindChinContours(const IntensityImage &image, FeatureMap &features) const {
-	return false;
+
+	std::cout << "Chin Contourse" << std::endl;
+	Feature Mouth = features.getFeature(Feature::FEATURE_MOUTH_TOP);
+	Point2D<double> MouthPosition;
+	
+	std::vector<Point2D<double>> ChinPositions;
+	Feature Chin = Feature(Feature::FEATURE_CHIN);
+	Feature ChinContour = Feature(Feature::FEATURE_CHIN_CONTOUR);
+	int y = 0;
+	int m = 0;
+	
+	for (int j = 180; j > 0; j -= 10){
+		MouthPosition.set(Mouth.getX(), Mouth.getY()); //return to the mouthtop
+		MouthPosition.set(drawLine(j, 27, MouthPosition));
+	
+		std::cout << std::endl << "line " << m << std::endl;
+		m = m + 1;
+
+		for (int i = 0; i < 30; i++){
+
+			MouthPosition.set(drawLine(j, 1, MouthPosition));
+
+			Intensity pixel = image.getPixel(MouthPosition.getX(), MouthPosition.getY());
+			std::cout << i << "  ";
+
+			if (pixel < 10){
+				std::cout << std::endl << "found pixel " << pixel << std::endl;
+				if (j < 40 && j > 140){
+					ChinContour.addPoint(drawLine(j, 2, MouthPosition));
+				}
+				else{
+					ChinContour.addPoint(MouthPosition);
+				}
+				
+				break;
+			}
+		
+
+			/* 
+			else{
+				Point2D<double> PrefPosition;
+				std::vector<Point2D<double>> pointlist = ChinContour.getPoints();
+				if(!pointlist.empty())
+					PrefPosition.set(ChinContour.getPoints().back());
+				Point2D<double> NewPosition;
+				if (j>90){
+					NewPosition.set(drawLine(80, 180 / 19, PrefPosition));
+				}
+			
+				else{
+					NewPosition.set(drawLine(300, 180 / 19, PrefPosition));
+				}
+				ChinContour.addPoint(NewPosition);
+				break;
+			}
+			*/
+		}	
+	}	
+	features.putFeature(ChinContour);
+	return true;
 }
 
+Point2D<double> StudentLocalization::drawLine(double angle, int len, Point2D<double> point) const{
+	angle = angle * M_PI / 180; // Degrees to radians
+	Point2D<double> point1;
+	point1.setX(point.getX() + len * cos(angle)); 
+	point1.setY(point.getY() + len * sin(angle));
+	return point1;
+}
 bool StudentLocalization::stepFindNoseEndsAndEyes(const IntensityImage &image, FeatureMap &features) const {
 	return false;
 }
