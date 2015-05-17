@@ -22,33 +22,30 @@ bool StudentLocalization::stepFindChinContours(const IntensityImage &image, Feat
 	int y = 0;
 	int m = 0;
 	
-	for (int j = 180; j > 0; j -= 10){
+	for (int j = HALF_CIRCLE; j > 0; j -= DEGREE_STEP){
 		MouthPosition.set(Mouth.getX(), Mouth.getY()); //return to the mouthtop
-		MouthPosition.set(drawLine(j, 27, MouthPosition));
+		MouthPosition.set(drawLine(j, START_POSITION, MouthPosition));
 	
 		std::cout << std::endl << "line " << m << std::endl;
 		m = m + 1;
 
-		for (int i = 0; i < 30; i++){
+		for (int i = 0; i < MEASURE_RANGE; i++){
 
-			MouthPosition.set(drawLine(j, 1, MouthPosition));
+			MouthPosition.set(drawLine(j, MEASURE_STEP, MouthPosition));
 
 			Intensity pixel = image.getPixel(MouthPosition.getX(), MouthPosition.getY());
 			std::cout << i << "  ";
 
-			if (pixel < 10){
+			if (pixel < 2){ //detect chin contour
 				std::cout << std::endl << "found pixel " << pixel << std::endl;
-				if (j < 40 && j > 140){
+				if (j < RIGHT_HALF && j > LEFT_HALF){
 					ChinContour.addPoint(drawLine(j, 2, MouthPosition));
 				}
 				else{
 					ChinContour.addPoint(MouthPosition);
 				}
-				
 				break;
 			}
-		
-
 			/* 
 			else{
 				Point2D<double> PrefPosition;
@@ -74,7 +71,7 @@ bool StudentLocalization::stepFindChinContours(const IntensityImage &image, Feat
 }
 
 Point2D<double> StudentLocalization::drawLine(double angle, int len, Point2D<double> point) const{
-	angle = angle * M_PI / 180; // Degrees to radians
+	angle = angle * M_PI / HALF_CIRCLE; // Degrees to radians
 	Point2D<double> point1;
 	point1.setX(point.getX() + len * cos(angle)); 
 	point1.setY(point.getY() + len * sin(angle));
