@@ -46,24 +46,6 @@ bool StudentLocalization::stepFindChinContours(const IntensityImage &image, Feat
 				}
 				break;
 			}
-			/* 
-			else{
-				Point2D<double> PrefPosition;
-				std::vector<Point2D<double>> pointlist = ChinContour.getPoints();
-				if(!pointlist.empty())
-					PrefPosition.set(ChinContour.getPoints().back());
-				Point2D<double> NewPosition;
-				if (j>90){
-					NewPosition.set(drawLine(80, 180 / 19, PrefPosition));
-				}
-			
-				else{
-					NewPosition.set(drawLine(300, 180 / 19, PrefPosition));
-				}
-				ChinContour.addPoint(NewPosition);
-				break;
-			}
-			*/
 		}	
 	}	
 	features.putFeature(ChinContour);
