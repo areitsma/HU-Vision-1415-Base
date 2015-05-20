@@ -22,7 +22,25 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 }
 
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
-	return nullptr;
+	int kernel[3][3] = { { 0, 1, 0 }, { 1, -4, 1 }, { 0, 1, 0 } };
+	IntensityImage * newIntensityImage;
+	Intensity newIntensity;
+	for (int i; i < image.getWidth(); i++){
+		for (int j; j < image.getHeight(); j++){
+			if ((i == 0) || (i == image.getWidth() - 1) || (j == 0) || (j == image.getHeight() - 1)){
+				newIntensity = 0;
+			}
+			else{
+				for (int x = -1; x <= 1; x++){
+					for (int y = -1; y <= 1; y++){
+						newIntensity += image.getPixel(x + (i - 1), y + (j - 1)) * kernel[i][j];
+					}
+				}
+				IntensityImage::newIntensityImage.setPixel(i, j, newIntensity);
+		}
+	}
+	
+	return newIntensityImage;
 }
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
