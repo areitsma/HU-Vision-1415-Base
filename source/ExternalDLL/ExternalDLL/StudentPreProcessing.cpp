@@ -29,7 +29,8 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	{ 4, 9, 12, 9, 4 },
 	{ 5, 12, 15, 12, 5 },
 	{ 4, 9, 12, 9, 4 },
-	{ 2, 4, 5, 4, 2 }, };
+	{ 2, 4, 5, 4, 2 } };
+	//159
 
 	//Gausian
 	const int kernel5x51[5][5] =
@@ -37,15 +38,25 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	{ 2, 7, 11, 7, 2 },
 	{ 3, 11, 17, 11, 3 },
 	{ 2, 7, 11, 7, 2 },
-	{ 1, 2, 3, 2, 1 }, };
+	{ 1, 2, 3, 2, 1 } };
 
-	const int LapKernel5x5[5][5] =
+	const int LKernel5x5[5][5] =
 	{ { -1, -1, -1, -1, -1, },
 	{ -1, -1, -1, -1, -1, },
 	{ -1, -1, 24, -1, -1, },
 	{ -1, -1, -1, -1, -1, },
 	{ -1, -1, -1, -1, -1 } };
 
+	const int LapKernel9x9[9][9] =
+	{ { 0, 0, 0, 1, 1, 1, 0, 0, 0 },	
+	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+	{ 1, 1, 1, -4, -4, -4, 1, 1, 1 },
+	{ 1, 1, 1, -4, -4, -4, 1, 1, 1 },
+	{ 1, 1, 1, -4, -4, -4, 1, 1, 1 },
+	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 } };
 
 	int kernel3[3][3] = { { 0, 3, 0 }, 
 						{ 3, -12, 3 }, 
@@ -61,6 +72,7 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	{ -1, 8, -1 },
 	{ -1, -1, -1 } };
 
+	//sobel
 	char kernelX[3][3] = {
 		{ -1, 0, 1 },
 		{ -2, 0, 2 },
@@ -72,34 +84,55 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 		{ 1, 2, 1 }
 	};
 
-	IntensityImageStudent *  valueImage = new IntensityImageStudent(image.getWidth() - 2, image.getHeight() - 2);
-	IntensityImageStudent * newIntensityImage = new IntensityImageStudent(valueImage->getWidth(), valueImage->getHeight());
-
-	int newIntensity;
+	IntensityImageStudent *  valueImage = new IntensityImageStudent(image.getWidth() - 4, image.getHeight() - 4);
+	IntensityImageStudent * newIntensityImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
 	
-	for (int x = 1; x < image.getWidth() - 1; x++){
-		for (int y = 1; y < image.getHeight() - 1; y++){
-			  newIntensity = 0;
+	int newIntensity;
 
-			for (int g = -1; g <= 1; g++){
-				for (int q = -1; q <= 1; q++){
-					newIntensity += image.getPixel(x + g, y + q) * (kernel2[g + 1][q + 1]);
-				}
-			}
-			valueImage->setPixel(x - 1, y - 1, static_cast<unsigned char>(newIntensity / 16));
+	//first we make the image white
+	for (int x = 0; x < newIntensityImage->getWidth(); x++) {
+		for (int y = 0; y < newIntensityImage->getHeight(); y++) {
+			newIntensityImage->setPixel(x, y, 0);
 		}
 	}
-	float sumX;
-	float sumY;
-	for (int i = 0; i < valueImage->getWidth(); i++){
-		for (int j = 0; j < valueImage->getHeight(); j++){
-			if ((i == 0) || (i == valueImage->getWidth() - 1) || (j == 0) || (j == valueImage->getHeight() - 1)){
+
+	for (int x = 4; x < image.getWidth() - 4; x++){
+		for (int y = 4; y < image.getHeight() - 4; y++){
+			newIntensity = 0;
+
+			for (int g = -4; g <= 4; g++){
+				for (int q = -4; q <= 4; q++){
+					newIntensity += (image.getPixel(x + g, y + q) * (LapKernel9x9[g + 4][q + 4]));
+				}
+			}
+			if (newIntensity > 255){
+				newIntensity = 255;
+			}
+			else if (newIntensity < 0){
 				newIntensity = 0;
 			}
-			else{
+			newIntensityImage->setPixel(x, y, static_cast<unsigned char>(newIntensity));
+		}
+	}
+	return newIntensityImage;
+	/*
+	float sumX;
+	float sumY;
+	for (int i = 2; i < valueImage->getWidth()-2; i++){
+		for (int j = 2; j < valueImage->getHeight()-2; j++){
 				newIntensity = 0;
 				sumX = 0.0;
 				sumY = 0.0;
+				for (int x = -2; x <= 2; x++){
+					for (int y = -2; y <= 2; y++){
+						newIntensity += valueImage->getPixel(x + i, y + j) * LapKernel5x5[x + 2][y + 2];
+					}
+				}
+				for (int x = -2; x <= 2; x++){
+					for (int y = -2; y <= 2; y++){
+						newIntensity += valueImage->getPixel(x + i, y + j) * LapKernel5x5[x + 2][y + 2];
+					}
+				}
 				for (int x = -1; x <= 1; x++){
 					for (int y = -1; y <= 1; y++){
 						newIntensity += valueImage->getPixel(x + i, y + j) * kernel3[x + 1][y + 1];
@@ -108,23 +141,14 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 					}
 				}
 				//newIntensity = abs(sumX) + abs(sumY);
-				if (newIntensity > 255){
-					newIntensity = 255;
-				}
-				else if (newIntensity < 0){
-					newIntensity = 0;
-				}
-				newIntensityImage->setPixel(i, j, static_cast<unsigned char>(newIntensity));
-			}
-		}
-	}
-	return newIntensityImage;
+				//newIntensity = (newIntensity);
+				*/
 }
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
 	IntensityImageStudent *  newImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
 
-	int threshold = 30;
+	int threshold = 210;
 
 	for (int x = 0; x < image.getWidth(); x++){
 		for (int y = 0; y < image.getHeight(); y++){

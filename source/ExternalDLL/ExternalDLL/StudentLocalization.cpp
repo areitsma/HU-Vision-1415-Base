@@ -12,7 +12,7 @@ bool StudentLocalization::stepFindNoseMouthAndChin(const IntensityImage &image, 
 
 bool StudentLocalization::stepFindChinContours(const IntensityImage &image, FeatureMap &features) const {
 
-	std::cout << "Chin Contourse" << std::endl;
+	//std::cout << "Chin Contourse" << std::endl;
 	Feature Mouth = features.getFeature(Feature::FEATURE_MOUTH_TOP);
 	Point2D<double> MouthPosition;
 	
@@ -26,18 +26,18 @@ bool StudentLocalization::stepFindChinContours(const IntensityImage &image, Feat
 		MouthPosition.set(Mouth.getX(), Mouth.getY()); //return to the mouthtop
 		MouthPosition.set(drawLine(j, START_POSITION, MouthPosition));
 	
-		std::cout << std::endl << "line " << m << std::endl;
+		//std::cout << std::endl << "line " << m << std::endl;
 		m = m + 1;
 
 		for (int i = 0; i < MEASURE_RANGE; i++){
 
 			MouthPosition.set(drawLine(j, MEASURE_STEP, MouthPosition));
-
 			Intensity pixel = image.getPixel(MouthPosition.getX(), MouthPosition.getY());
-			std::cout << i << "  ";
+
+			//std::cout << i << "  ";
 
 			if (pixel < 2){ //detect chin contour
-				std::cout << std::endl << "found pixel " << pixel << std::endl;
+				//std::cout << std::endl << "found pixel " << pixel << std::endl;
 				if (j < RIGHT_HALF && j > LEFT_HALF){
 					ChinContour.addPoint(drawLine(j, 2, MouthPosition));
 				}
