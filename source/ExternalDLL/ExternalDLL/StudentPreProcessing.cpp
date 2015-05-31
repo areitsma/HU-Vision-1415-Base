@@ -2,6 +2,8 @@
 #include "IntensityImageStudent.h"
 #include <algorithm>
 #include <iostream>
+#include <vector>
+
 
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
 
@@ -18,8 +20,44 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &imag
 	return IntImage;
 }
 
+//Bilinear scaling
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
-	return nullptr;
+	int dest_width = 200;
+	int dest_height = 200;
+	IntensityImageStudent * outImage = new IntensityImageStudent{ 200, 200 };
+
+	int A, B, C, D, x, y, index, gray;
+
+	float x_ratio = ((float)(image.getWidth() - 1)) / dest_width;
+	float y_ratio = ((float)(image.getHeight() - 1)) / dest_height;
+
+	float x_diff, y_diff, ya, yb;
+
+	for (int i = 0; i<dest_height; i++) {
+		for (int j = 0; j<dest_width; j++) {
+			x = (int)(x_ratio * j);
+			y = (int)(y_ratio * i);
+			x_diff = (x_ratio * j) - x;
+			y_diff = (y_ratio * i) - y;
+			index = y*image.getWidth() + x;
+
+			
+			A = image.getPixel(index);
+			B = image.getPixel(index + 1);
+			C = image.getPixel(index + image.getWidth());
+			D = image.getPixel(index + image.getWidth() + 1);
+
+			// Y = A(1-w)(1-h) + B(w)(1-h) + C(h)(1-w) + Dwh
+			gray = (int)(
+				A*(1 - x_diff)*(1 - y_diff) + B*(x_diff)*(1 - y_diff) +
+				C*(y_diff)*(1 - x_diff) + D*(x_diff*y_diff)
+				);
+
+			outImage->setPixel(j,i, gray);
+		}
+	}
+	return outImage;
+
 }
 
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
