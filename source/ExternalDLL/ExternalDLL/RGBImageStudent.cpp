@@ -1,12 +1,10 @@
 #include "RGBImageStudent.h"
 
-//Default constructor
 RGBImageStudent::RGBImageStudent() : RGBImage() {
 	//int throwError = 0, e = 1 / throwError; //Throws error without the need to include a header
 	//TODO: Nothing
 }
 
-//Constructor with given RGBImageStudent
 RGBImageStudent::RGBImageStudent(const RGBImageStudent &other) : RGBImage(other.getWidth(), other.getHeight()) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Create a copy from the other object
@@ -22,7 +20,7 @@ RGBImageStudent::RGBImageStudent(const RGBImageStudent &other) : RGBImage(other.
 	}*/
 }
 
-//Constructor with given width and height
+
 RGBImageStudent::RGBImageStudent(const int width, const int height) : RGBImage(width, height) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Initialize pixel storage
@@ -36,7 +34,6 @@ RGBImageStudent::~RGBImageStudent() {
 	//delete[] pixelStorage;
 }
 
-//Set the RGBImageStudent to given width and height
 void RGBImageStudent::set(const int width, const int height) {
 	RGBImage::set(width, height);
 	//int throwError = 0, e = 1 / throwError;
@@ -45,7 +42,6 @@ void RGBImageStudent::set(const int width, const int height) {
 	pixelStorage = new RGB[width * height];
 }
 
-//Set the RGBImageStudent to given RGMImageStudent
 void RGBImageStudent::set(const RGBImageStudent &other) {
 	RGBImage::set(other.getWidth(), other.getHeight());
 	//int throwError = 0, e = 1 / throwError;
@@ -59,7 +55,6 @@ void RGBImageStudent::set(const RGBImageStudent &other) {
 	}*/
 }
 
-//Set the pixel of RGBImageStudent with given x and y coordinate
 void RGBImageStudent::setPixel(int x, int y, RGB pixel) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: no comment needed :)
@@ -67,7 +62,6 @@ void RGBImageStudent::setPixel(int x, int y, RGB pixel) {
 	setPixel(i,pixel);
 }
 
-//Set the pixel of RGBImageStudent with given x and y coordinate
 void RGBImageStudent::setPixel(int i, RGB pixel) {
 	pixelStorage[i] = pixel;
 	//int throwError = 0, e = 1 / throwError;
@@ -94,7 +88,6 @@ void RGBImageStudent::setPixel(int i, RGB pixel) {
 	*/
 }
 
-//Get pixel of RGBImageStudent with given x and y coordinates
 RGB RGBImageStudent::getPixel(int x, int y) const {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: no comment needed :)
@@ -102,14 +95,12 @@ RGB RGBImageStudent::getPixel(int x, int y) const {
 	return getPixel(i);
 }
 
-//Get pixel of RGBImageStudent with given number
 RGB RGBImageStudent::getPixel(int i) const {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: see setPixel(int i, RGB pixel)
 	return pixelStorage[i];
 }
 
-//Apply all given pixels to the RGBImageStudent
 void RGBImageStudent::setAllPixels(RGB* pS){
 	pixelStorage = pS;
 }
