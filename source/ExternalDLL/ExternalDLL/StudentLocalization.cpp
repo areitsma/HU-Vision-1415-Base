@@ -12,36 +12,41 @@ bool StudentLocalization::stepFindNoseMouthAndChin(const IntensityImage &image, 
 
 bool StudentLocalization::stepFindChinContours(const IntensityImage &image, FeatureMap &features) const {
 
-	//std::cout << "Chin Contourse" << std::endl;
+	//Get the position of the mouth
 	Feature Mouth = features.getFeature(Feature::FEATURE_MOUTH_TOP);
 	Point2D<double> MouthPosition;
 	
+	//Initialise the chin feature
 	std::vector<Point2D<double>> ChinPositions;
 	Feature Chin = Feature(Feature::FEATURE_CHIN);
 	Feature ChinContour = Feature(Feature::FEATURE_CHIN_CONTOUR);
 	int y = 0;
 	int m = 0;
 	
+	//Draw a half circle starting from the center of the mouth
 	for (int j = HALF_CIRCLE; j > 0; j -= DEGREE_STEP){
-		MouthPosition.set(Mouth.getX(), Mouth.getY()); //return to the mouthtop
+		
+		//reset the position of the mouth
+		MouthPosition.set(Mouth.getX(), Mouth.getY());
 		MouthPosition.set(drawLine(j, START_POSITION, MouthPosition));
 	
-		//std::cout << std::endl << "line " << m << std::endl;
 		m = m + 1;
 
+		
 		for (int i = 0; i < MEASURE_RANGE; i++){
 
 			MouthPosition.set(drawLine(j, MEASURE_STEP, MouthPosition));
 			Intensity pixel = image.getPixel(MouthPosition.getX(), MouthPosition.getY());
 
-			//std::cout << i << "  ";
-
-			if (pixel < 2){ //detect chin contour
-				//std::cout << std::endl << "found pixel " << pixel << std::endl;
+			// If the intensity of the current pixel is lower than 2 (which means it is black)
+			if (pixel < 2){ 
+				
+				// If the current angle is within the bounds of the half circle
 				if (j < RIGHT_HALF && j > LEFT_HALF){
 					ChinContour.addPoint(drawLine(j, 2, MouthPosition));
 				}
 				else{
+					//Draw a point on the mouth position, to indicate the detection failed.
 					ChinContour.addPoint(MouthPosition);
 				}
 				break;
@@ -52,8 +57,9 @@ bool StudentLocalization::stepFindChinContours(const IntensityImage &image, Feat
 	return true;
 }
 
+//Draw a line from a given position, with given length and angle
 Point2D<double> StudentLocalization::drawLine(double angle, int len, Point2D<double> point) const{
-	angle = angle * M_PI / HALF_CIRCLE; // Degrees to radians
+	angle = angle * M_PI / HALF_CIRCLE; // Convert degrees to radians
 	Point2D<double> point1;
 	point1.setX(point.getX() + len * cos(angle)); 
 	point1.setY(point.getY() + len * sin(angle));
