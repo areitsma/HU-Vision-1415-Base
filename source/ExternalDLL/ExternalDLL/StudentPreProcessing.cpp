@@ -5,16 +5,32 @@
 #include <vector>
 
 
+//Grayscale RGBImage to intensity image
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
 
 	std::cout << "Step to Intensity image " << std::endl;
+	
+	// Create new IntensityImage with size of the image width and height
 	IntensityImageStudent * IntImage = new IntensityImageStudent{ image.getWidth(), image.getHeight() };
+
+	// Loop through every pixel of the entire image and calculate the Gray value with the selected method
 	for (int i = 0; i < image.getHeight()* image.getWidth(); i++){
+			//Get one pixel on position i of the image 
 			RGB rgbPix = image.getPixel(i); 
+
 			//convert RGB values to gray/intensity value
-			//int Gray = (rgbPix.r + rgbPix.g + rgbPix.b) / 3; //Method Average
-			//int Gray = (rgbPix.r * 0.299 + rgbPix.g  * 0.587 + rgbPix.b  * 0.114); //Method Luma
-			int Gray = (std::max({ rgbPix.r, rgbPix.g, rgbPix.b }) + std::min({ rgbPix.r, rgbPix.g, rgbPix.b})) / 2; // Method Desaturation
+			//Source: https://en.wikipedia.org/wiki/Grayscale
+
+			//Method Average, devide summation of r,g and b by 3
+			//int Gray = (rgbPix.r + rgbPix.g + rgbPix.b) / 3; 
+
+			//Method Luma, multiply r, g and b with specific value
+			//int Gray = (rgbPix.r * 0.299 + rgbPix.g  * 0.587 + rgbPix.b  * 0.114);
+
+			//Method Desaturation, add max value of r, g or b to min value of r, g or b
+			int Gray = (std::max({ rgbPix.r, rgbPix.g, rgbPix.b }) + std::min({ rgbPix.r, rgbPix.g, rgbPix.b})) / 2;
+
+			//Set the new pixel on position i
 			IntImage->setPixel(i, Gray);
 		}
 	return IntImage;
@@ -22,36 +38,47 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &imag
 
 //Bilinear scaling
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
+	//Set destination width and height
 	int dest_width = 200;
 	int dest_height = 200;
+
+	//Create new image what will be the output with the destination width and height
 	IntensityImageStudent * outImage = new IntensityImageStudent{ dest_width, dest_height };
 
 	int topLeft, topRight, bottomLeft, bottomRight, x, y, intensityValue;
 
-	//Berekening van ratio's
+	//Calculate the scale ratio's based on width and height of image and destination width and height
 	float xRatio = ((float)(image.getWidth() - 1)) / dest_width;
 	float yRatio = ((float)(image.getHeight() - 1)) / dest_height;
 
 	float xDiff, yDiff;
 
+	// Loop through destination image
 	for (int i = 0; i<dest_height; i++) {
 		for (int j = 0; j<dest_width; j++) {
+
+			//Calculate the x and y based on the ratio and current element
 			x = (int)(xRatio * j);
 			y = (int)(yRatio * i);
+
+			//Calculate the x and y difference
 			xDiff = (xRatio * j) - x;
 			yDiff = (yRatio * i) - y;
 			
+			//Get the values of every corner of the image
 			topLeft = image.getPixel(x, y);
 			topRight = image.getPixel(x + 1, y);
 			bottomLeft = image.getPixel(x, y + 1);
 			bottomRight = image.getPixel(x + 1, y + 1);
 
-			// gray amount = topLeft(1-w)(1-h) + topRight(w)(1-h) + bottomLeft(h)(1-w) + bottomRightwh
+			//Calculate intensity value of the current output pixel:
+			//gray amount = topLeft(1-w)(1-h) + topRight(w)(1-h) + bottomLeft(h)(1-w) + bottomRightwh
 			intensityValue = (int)(
 				topLeft * (1 - xDiff) * (1 - yDiff) + topRight*(xDiff) * (1 - yDiff) +
 				bottomLeft * (yDiff) * (1 - xDiff) + bottomRight * (xDiff * yDiff)
 				);
 
+			//Set the pixel on the output image
 			outImage->setPixel(j, i, intensityValue);
 		}
 	}
@@ -59,6 +86,7 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 
 }
 
+//Function to create edge detected image
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
 
 	//kernels:
@@ -77,12 +105,6 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	{ 2, 7, 11, 7, 2 },
 	{ 1, 2, 3, 2, 1 } };
 
-	const int LKernel5x5[5][5] =
-	{ { -1, -1, -1, -1, -1, },
-	{ -1, -1, -1, -1, -1, },
-	{ -1, -1, 24, -1, -1, },
-	{ -1, -1, -1, -1, -1, },
-	{ -1, -1, -1, -1, -1 } };
 
 	const int LapKernel9x9[9][9] =
 	{ { 0, 0, 0, 1, 1, 1, 0, 0, 0 },	
@@ -133,35 +155,41 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	{ -1, 8, -1 },
 	{ -1, -1, -1 } };
 
-
-	IntensityImageStudent *  valueImage = new IntensityImageStudent(image.getWidth() - 4, image.getHeight() - 4);
+	//Create the new intensityImage 
 	IntensityImageStudent * newIntensityImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
 	
 	int newIntensity;
 
-	//maak image wit
+	// Make every pixel of the new image white (0)
 	for (int x = 0; x < newIntensityImage->getWidth(); x++) {
 		for (int y = 0; y < newIntensityImage->getHeight(); y++) {
 			newIntensityImage->setPixel(x, y, 0);
 		}
 	}
 
-	//uitvoeren van de kernel op de image
+	// Algorithm for convolving the image and the kernel, source https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
+	// First loop through entire image except the border (4 pixel = kernel size /2) because otherwise the kernel will be out of range
 	for (int x = 4; x < image.getWidth() - 4; x++){
 		for (int y = 4; y < image.getHeight() - 4; y++){
+
+			//Reset intensity accumulator to 0
 			newIntensity = 0;
 
+			// Now loop through entire kernel, first the row then the elements in that row 
 			for (int g = -4; g <= 4; g++){
 				for (int q = -4; q <= 4; q++){
+					//Get the pixel intensity and caluclate the accumulator intensity by multiplying the pixel value and the kernel element value, add this to the accumulator intensity
 					newIntensity += (image.getPixel(x + g, y + q) * (LapKernel9x9[g + 4][q + 4]));
 				}
 			}
+			//Threshold check, if new intensity higher then 255 pixel is black and lower then the pixel is white
 			if (newIntensity > 255){
 				newIntensity = 255;
 			}
 			else if (newIntensity < 0){
 				newIntensity = 0;
 			}
+			//Set the new white or black pixel
 			newIntensityImage->setPixel(x, y, static_cast<unsigned char>(newIntensity));
 		}
 	}
@@ -170,20 +198,25 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
 	IntensityImageStudent *  newImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
-	// met threshold waarde van 210 kregen we de besten afbeeldingen. 
+	// Threshold set to 210 for the best image
 	int threshold = 210;
 
+	// Loop through entire image, first the row then the elements in that row 
 	for (int x = 0; x < image.getWidth(); x++){
 		for (int y = 0; y < image.getHeight(); y++){
+
 			int intensityValue = 0;
+			//Get intensity value of pixel x, y
 			intensityValue = image.getPixel(x, y);
 
+			//Check if threshold is higher then the value if so intensity value is set to 0, else to 255
 			if (intensityValue > threshold){
 				intensityValue = 0;
 			}
 			else {
 				intensityValue = 255;
 			}
+			//Set the new intensity value on pixel x, y of new image
 			newImage->setPixel(x, y, static_cast<unsigned char>(intensityValue));
 		}
 	}

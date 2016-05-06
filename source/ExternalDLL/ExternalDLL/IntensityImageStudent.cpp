@@ -1,10 +1,12 @@
 #include "IntensityImageStudent.h"
 
+//Constructor of new intenisityimage
 IntensityImageStudent::IntensityImageStudent() : IntensityImage() {
 	//int throwError = 0, e = 1 / throwError; //Throws error without the need to include a header
 	//TODO: Nothing
 }
 
+//Copy Constructor of new intenisityimage 
 IntensityImageStudent::IntensityImageStudent(const IntensityImageStudent &other) : IntensityImage(other.getWidth(), other.getHeight()) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Create a copy from the other object
@@ -17,6 +19,7 @@ IntensityImageStudent::IntensityImageStudent(const IntensityImageStudent &other)
 	}*/
 }
 
+//Constructor of new intenisityimage with given width and height
 IntensityImageStudent::IntensityImageStudent(const int width, const int height) : IntensityImage(width, height) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: Initialize pixel storage
@@ -25,12 +28,14 @@ IntensityImageStudent::IntensityImageStudent(const int width, const int height) 
 
 }
 
+//Destrutor
 IntensityImageStudent::~IntensityImageStudent() {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: delete allocated objects
 	delete[] pixel_storage;
 }
 
+//Set width and height of intensityImage
 void IntensityImageStudent::set(const int width, const int height) {
 	IntensityImage::set(width, height);
 	//int throwError = 0, e = 1 / throwError;
@@ -39,6 +44,7 @@ void IntensityImageStudent::set(const int width, const int height) {
 	pixel_storage = new Intensity[width * height];
 }
 
+//Set width and height of other intensityImage
 void IntensityImageStudent::set(const IntensityImageStudent &other) {
 	IntensityImage::set(other.getWidth(), other.getHeight());
 	//int throwError = 0, e = 1 / throwError;
@@ -52,6 +58,7 @@ void IntensityImageStudent::set(const IntensityImageStudent &other) {
 		
 }
 
+//Set pixel of intenistyImage with the given intensity
 void IntensityImageStudent::setPixel(int x, int y, Intensity pixel) {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: no comment needed :)
@@ -59,6 +66,7 @@ void IntensityImageStudent::setPixel(int x, int y, Intensity pixel) {
 	setPixel(i, pixel);
 }
 
+//Set pixel of intenistyImage with the given intensity
 void IntensityImageStudent::setPixel(int i, Intensity pixel) {
 	//int throwError = 0, e = 1 / throwError;
 	pixel_storage[i] = pixel;
@@ -86,6 +94,7 @@ void IntensityImageStudent::setPixel(int i, Intensity pixel) {
 	*/
 }
 
+//Get intensity pixel
 Intensity IntensityImageStudent::getPixel(int x, int y) const {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: no comment needed :)
@@ -94,6 +103,7 @@ Intensity IntensityImageStudent::getPixel(int x, int y) const {
 	
 }
 
+//Get intensity pixel
 Intensity IntensityImageStudent::getPixel(int i) const {
 	//int throwError = 0, e = 1 / throwError;
 	//TODO: see setPixel(int i, RGB pixel)

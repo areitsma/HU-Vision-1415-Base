@@ -16,6 +16,7 @@ public:
 	bool stepFindExactEyes(const IntensityImage &image, FeatureMap &features) const;
 	Point2D<double> drawLine(double angle, int len, Point2D<double> point) const;
 
+	//Constant values for chin detection
 	const int DEGREE_STEP = 10;
 	const int HALF_CIRCLE = 180;
 	const int START_POSITION = 27;
